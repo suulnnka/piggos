@@ -1,49 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Browser</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        #controls {
-            display: flex;
-            padding: 10px;
-            background: #f1f1f1;
-            border-bottom: 1px solid #ccc;
-        }
-        #addr {
-            flex: 1;
-            margin-right: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Browser</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #controls {
+      display: flex;
+      padding: 10px;
+      background: #f1f1f1;
+      border-bottom: 1px solid #ccc;
+    }
+
+    #addr {
+      flex: 1;
+      margin-right: 10px;
+    }
+  </style>
 </head>
+
 <body>
-    <div id="controls">
-        <button id="back">Back</button>
-        <input type="text" id="addr" placeholder="Enter URL" />
-        <button id="go">Go</button>
-    </div>
-    <iframe id="browser" src="https://www.baidu.com" style="width: 100%; height: calc(100% - 50px); border: none;"></iframe>
-    <script>
-        const { ipcRenderer } = require('electron');
-        const backBtn = document.getElementById('back');
-        const goBtn = document.getElementById('go');
-        const addrInput = document.getElementById('addr');
+  <div id="controls">
+    <button id="back">Back</button>
+    <input type="text" id="addr" placeholder="Enter URL" />
+    <button id="go">Go</button>
+  </div>
+  <iframe id="browser" src="https://www.baidu.com"
+    style="width: 100%; height: calc(100% - 50px); border: none;"></iframe>
+  <script>
+    const { ipcRenderer } = require('electron');
+    const backBtn = document.getElementById('back');
+    const goBtn = document.getElementById('go');
+    const addrInput = document.getElementById('addr');
 
-        backBtn.addEventListener('click', () => {
-            ipcRenderer.send('go-back');
-        });
+    backBtn.addEventListener('click', () => {
+      ipcRenderer.send('go-back');
+    });
 
-        goBtn.addEventListener('click', () => {
-            const url = addrInput.value;
-            if (url) {
-                ipcRenderer.send('navigate-to', url.startsWith('http') ? url : `http://${url}`);
-            }
-        });
-    </script>
+    goBtn.addEventListener('click', () => {
+      const url = addrInput.value;
+      if (url) {
+        ipcRenderer.send('navigate-to', url.startsWith('http') ? url : `http://${url}`);
+      }
+    });
+  </script>
 </body>
+
 </html>

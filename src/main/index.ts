@@ -1,50 +1,56 @@
-import { app, BrowserWindow, ipcMain, BrowserView } from 'electron';
-import * as path from 'path';
-
-let mainWindow: BrowserWindow;
-let webView: BrowserView;
+const { app, BaseWindow, WebContentsView} = require('electron')
 
 function createWindow() {
-    mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
-        },
-    });
 
-    webView = new BrowserView();
-    mainWindow.setBrowserView(webView);
-    webView.setBounds({ x: 0, y: 50, width: 800, height: 550 });
-    webView.webContents.loadURL('https://www.baidu.com');
+    let w = 800
+    let d = 600
+    const bound = 8
 
-    mainWindow.loadFile('src/renderer/index.html');
+    const win = new BaseWindow({
+        width: w,
+        height: d,
+        //titleBarStyle: 'hidden',
+        //titleBarOverlay: true
+    })
 
-    mainWindow.on('closed', () => {
-        mainWindow = null;
-    });
+    w = win.getContentSize()[0];
+    d = win.getContentSize()[1];
+
+    const parentView = new WebContentsView()
+    win.contentView.addChildView(parentView)
+
+    parentView.setBounds({ x: 0, y: 0, width: w, height: d })
+    //parentView.webContents.loadURL('https://kimi.moonshot.cn')
+    parentView.webContents.loadFile('src/renderer/black.html')
+
+    const leftView = new WebContentsView()
+    win.contentView.addChildView(leftView)
+
+    const rightView = new WebContentsView()
+    win.contentView.addChildView(rightView)
+
+    leftView.setBounds({ x: bound, y: bound, width: (w-3*bound)/2, height: d-2*bound })
+    rightView.setBounds({ x: (w+bound)/2, y: bound, width: (w-3*bound)/2, height: d-2*bound })
+
+    //leftView.webContents.loadURL('https://baidu.com')
+    leftView.webContents.loadFile('src/renderer/white.html')
+    //rightView.webContents.loadURL('https://baidu.com')
+    rightView.webContents.loadFile('src/renderer/white.html')
+
+    win.on('resize',() => {
+        w = win.getContentSize()[0];
+        d = win.getContentSize()[1];
+
+        parentView.setBounds({ x: 0, y: 0, width: w, height: d })
+
+        leftView.setBounds({ x: bound, y: bound, width: (w-3*bound)/2, height: d-2*bound })
+        rightView.setBounds({ x: (w+bound)/2, y: bound, width: (w-3*bound)/2, height: d-2*bound })
+    })
 }
 
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+    app.quit();
 });
 
-app.on('activate', () => {
-    if (mainWindow === null) {
-        createWindow();
-    }
-});
-
-ipcMain.on('navigate-to', (event, url) => {
-    webView.webContents.loadURL(url);
-});
-
-ipcMain.on('go-back', () => {
-    if (webView.webContents.canGoBack()) {
-        webView.webContents.goBack();
-    }
-});
