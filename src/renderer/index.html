@@ -8,14 +8,14 @@
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
     }
 
     #controls {
+      height: 22px;
       display: flex;
-      padding: 10px;
+      padding: 6px;
       background: #f1f1f1;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 2px solid #ccc;
     }
 
     #addr {
@@ -28,14 +28,16 @@
 <body>
   <div id="controls">
     <button id="back">Back</button>
+    <button id="next">Next</button>
+    <button id="refresh">Refresh</button>
     <input type="text" id="addr" placeholder="Enter URL" />
     <button id="go">Go</button>
   </div>
-  <iframe id="browser" src="https://www.baidu.com"
-    style="width: 100%; height: calc(100% - 50px); border: none;"></iframe>
   <script>
     const { ipcRenderer } = require('electron');
     const backBtn = document.getElementById('back');
+    const nextBtn = document.getElementById('next');
+    const refreshBtn = document.getElementById('refresh');
     const goBtn = document.getElementById('go');
     const addrInput = document.getElementById('addr');
 

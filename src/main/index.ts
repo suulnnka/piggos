@@ -1,50 +1,60 @@
-const { app, BaseWindow, WebContentsView} = require('electron')
+import { app, BaseWindow, WebContentsView } from 'electron'
+import { join } from 'path'
+import { electronApp, is } from '@electron-toolkit/utils'
 
 function createWindow() {
-
-    let w = 800
-    let d = 600
-    const bound = 8
+    electronApp.setAppUserModelId('com.stoneark')
 
     const win = new BaseWindow({
-        width: w,
-        height: d,
+        width: 800,
+        height: 600,
         //titleBarStyle: 'hidden',
         //titleBarOverlay: true
     })
 
-    w = win.getContentSize()[0];
-    d = win.getContentSize()[1];
+    let w = win.getContentSize()[0];
+    let d = win.getContentSize()[1];
+
+    const bound = 0
+
+    let topbar_h = 22+6+6+2
+    let leftbar_w = 0
+    let rightbar_w = 0
 
     const parentView = new WebContentsView()
     win.contentView.addChildView(parentView)
 
     parentView.setBounds({ x: 0, y: 0, width: w, height: d })
-    //parentView.webContents.loadURL('https://kimi.moonshot.cn')
-    parentView.webContents.loadFile('src/renderer/black.html')
+    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+        parentView.webContents.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    } else {
+        parentView.webContents.loadFile(join(__dirname, '../renderer/index.html'))
+    }
 
-    const leftView = new WebContentsView()
-    win.contentView.addChildView(leftView)
+    const browserView = new WebContentsView()
+    win.contentView.addChildView(browserView)
 
-    const rightView = new WebContentsView()
-    win.contentView.addChildView(rightView)
+    browserView.setBounds({
+        x: leftbar_w+bound,
+        y: topbar_h+bound,
+        width: w-leftbar_w-rightbar_w-2*bound,
+        height: d-topbar_h-2*bound
+    })
 
-    leftView.setBounds({ x: bound, y: bound, width: (w-3*bound)/2, height: d-2*bound })
-    rightView.setBounds({ x: (w+bound)/2, y: bound, width: (w-3*bound)/2, height: d-2*bound })
-
-    //leftView.webContents.loadURL('https://baidu.com')
-    leftView.webContents.loadFile('src/renderer/white.html')
-    //rightView.webContents.loadURL('https://baidu.com')
-    rightView.webContents.loadFile('src/renderer/white.html')
+    browserView.webContents.loadURL('https://kimi.moonshot.cn')
+    //browserView.webContents.loadURL('https://www.doubao.com/chat/search')
 
     win.on('resize',() => {
         w = win.getContentSize()[0];
         d = win.getContentSize()[1];
 
         parentView.setBounds({ x: 0, y: 0, width: w, height: d })
-
-        leftView.setBounds({ x: bound, y: bound, width: (w-3*bound)/2, height: d-2*bound })
-        rightView.setBounds({ x: (w+bound)/2, y: bound, width: (w-3*bound)/2, height: d-2*bound })
+        browserView.setBounds({
+            x: leftbar_w+bound,
+            y: topbar_h+bound,
+            width: w-leftbar_w-rightbar_w-2*bound,
+            height: d-topbar_h-2*bound
+        })
     })
 }
 
