@@ -30,27 +30,45 @@
     <button id="back">Back</button>
     <button id="next">Next</button>
     <button id="refresh">Refresh</button>
-    <input type="text" id="addr" placeholder="Enter URL" />
+    <input type="text" onkeydown="handleAddrKeyDown(event)" id="addr" placeholder="Enter URL" />
     <button id="go">Go</button>
   </div>
   <script>
-    const { ipcRenderer } = require('electron');
     const backBtn = document.getElementById('back');
     const nextBtn = document.getElementById('next');
     const refreshBtn = document.getElementById('refresh');
     const goBtn = document.getElementById('go');
     const addrInput = document.getElementById('addr');
 
+    window.api.on("navigate", (event, message) => {
+      addrInput.value = message
+    })
+
     backBtn.addEventListener('click', () => {
-      ipcRenderer.send('go-back');
+      window.api.send('browser-back');
     });
 
-    goBtn.addEventListener('click', () => {
-      const url = addrInput.value;
-      if (url) {
-        ipcRenderer.send('navigate-to', url.startsWith('http') ? url : `http://${url}`);
-      }
+    nextBtn.addEventListener('click', () => {
+      window.api.send('browser-next');
     });
+
+    let browser_go = () => {
+      let url = addrInput.value;
+      if (url) {
+        url = url.startsWith('http') ? url : `https://${url}`
+        window.api.send('browser-go', url);
+      }
+    }
+
+    function handleAddrKeyDown(event){
+      if(event.key=='Enter'){
+        browser_go()
+      }
+    }
+
+    refreshBtn.addEventListener('click', browser_go);
+    goBtn.addEventListener('click', browser_go);
+
   </script>
 </body>
 
