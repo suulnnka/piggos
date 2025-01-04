@@ -2,6 +2,8 @@ import { app, BaseWindow, WebContentsView, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, is } from '@electron-toolkit/utils'
 
+let DEBUG = false
+
 function createWindow() {
     electronApp.setAppUserModelId('com.stoneark')
 
@@ -19,7 +21,7 @@ function createWindow() {
 
     let topbar_h = 22+6+6+2
     let leftbar_w = 0
-    let rightbar_w = 0
+    let rightbar_w = DEBUG ? 700 : 0
 
     const parentView = new WebContentsView({
         webPreferences: {
@@ -50,7 +52,7 @@ function createWindow() {
     let browser_home_page = 'https://baidu.com';
     //let browser_home_page = 'https://www.doubao.com/chat/search';
 
-    //parentView.webContents.openDevTools();
+    DEBUG ? parentView.webContents.openDevTools() : null ;
     parentView.webContents.on('did-finish-load', () => {
         browserView.webContents.loadURL(browser_home_page);
         navigate(null,browser_home_page);
