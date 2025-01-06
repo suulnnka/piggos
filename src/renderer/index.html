@@ -41,7 +41,7 @@
     const addrInput = document.getElementById('addr');
 
     window.api.on("navigate", (event, message) => {
-      addrInput.value = message
+      addrInput.value = decodeURI(message)
     })
 
     backBtn.addEventListener('click', () => {
@@ -55,11 +55,12 @@
     let browser_go = () => {
       let url = addrInput.value;
       if (url) {
-        if(api.validator.isURL(url)!=true){
-          url = "https://www.baidu.com/s?wd=" + url
-        }
         if(url.startsWith("http")!=true){
-          url = "https://" + url
+          if(api.isURL(url)!=true){
+            url = "https://www.baidu.com/s?wd=" + url
+          }else{
+            url = "https://" + url
+          }
         }
         window.api.send('browser-go', url);
       }

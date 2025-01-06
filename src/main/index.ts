@@ -38,6 +38,8 @@ function createWindow() {
     }
 
     const browserView = new WebContentsView()
+    // enable browser touch zoom
+    browserView.webContents.setVisualZoomLevelLimits(1, 3)
     win.contentView.addChildView(browserView)
 
     browserView.setBounds({
