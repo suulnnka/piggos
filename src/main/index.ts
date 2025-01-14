@@ -14,6 +14,8 @@ function createWindow() {
         //titleBarOverlay: true
     })
 
+    win.menuBarVisible = false
+
     let w = win.getContentSize()[0];
     let d = win.getContentSize()[1];
 
